@@ -1,3 +1,15 @@
+# Basic ticker lookup app
+Basic web-app with an html form to enter a stock ticker. 
+Will eventually query some financial site's API using this ticker and generate
+an interactive display of the stock price.
+
+
+
+
+
+# README FROM FLASK DEMO FOLLOWS
+
+
 # Flask on Heroku
 
 This project is intended to help you tie together some important concepts and
