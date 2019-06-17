@@ -47,6 +47,9 @@ def get_ticker_data(ticker):
     session.mount('https://', requests.adapters.HTTPAdapter(max_retries=3))
     #retrieve response object from api, use .json() to convert to json-like
     #dictionary
+    data = session.get(url).json()
+    sys.stdout.write(str(data))
+    sys.stdout.flush()
     return session.get(url).json()
 
 def json_to_pandas_df(json):
