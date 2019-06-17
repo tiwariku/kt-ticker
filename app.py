@@ -38,7 +38,7 @@ def get_ticker_data(ticker, alpha_vantage = False):
 
     '''
     #from TDI blog post, v1 API used, don't know about v3 advertised on quandl
-    url = 'https://www.quandl.com/api/v1/datasets/WIKI/%s.json' % ticker
+    url = 'https://www.quandl.com/api/v3/datasets/WIKI/%s' % ticker
     if alpha_vantage:
         api_key = '5A7C8FNB8WEYQQHU'
         outputsize = 'full'
@@ -61,7 +61,7 @@ def get_ticker_data(ticker, alpha_vantage = False):
     if response.status_code != 200:
         sys.stdout.write(response.text)
     sys.stdout.flush()
-    return response.json() 
+    return response.json()['dataset']
 
 
 def json_to_pandas_df(my_json, alpha_vantage = False):
