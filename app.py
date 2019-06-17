@@ -55,7 +55,7 @@ def json_to_pandas_df(json):
     dataframe with the appropriate column names adn types
     '''
     #quandl json specific, there must be a better way to do this
-    sys.stderr.write(json)
+    sys.stderr.write(str(json))
     df = pd.DataFrame(json['data'], columns=json['column_names'])
     #convert to datetime, no timezone given
     df['Date'] = pd.to_datetime(df['Date'])
