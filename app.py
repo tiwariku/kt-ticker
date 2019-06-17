@@ -57,7 +57,9 @@ def get_ticker_data(ticker, alpha_vantage = False):
     #dictionary
     response = session.get(url)
     #data = json.loads(url)
-    sys.stdout.write(str(response.status_code))
+    sys.stdout.write('quandl reponse status code: {}\n'.format(response.status_code))
+    if response.status_code != 200:
+        sys.stdout.write(response.text)
     sys.stdout.flush()
     return response.json() 
 
