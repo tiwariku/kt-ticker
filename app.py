@@ -4,6 +4,7 @@ from bokeh.plotting import figure
 from bokeh.embed import components
 import pandas as pd
 import sys
+import json
 
 app = Flask(__name__)
 
@@ -47,20 +48,21 @@ def get_ticker_data(ticker):
     session.mount('https://', requests.adapters.HTTPAdapter(max_retries=3))
     #retrieve response object from api, use .json() to convert to json-like
     #dictionary
-    data = session.get(url).json()
-    sys.stdout.write(str(data))
+    response = session.get(url)
+    #data = json.loads(url)
+    sys.stdout.write(str(response))
     sys.stdout.flush()
-    return session.get(url).json()
+    return response.json() 
 
-def json_to_pandas_df(json):
+def json_to_pandas_df(my_json):
     '''
     accepts json-like dict from quantl's api, and converts to a pandas
     dataframe with the appropriate column names adn types
     '''
     #quandl json specific, there must be a better way to do this
-    sys.stdout.write(str(json.keys()))
+    sys.stdout.write(str(my_json.keys()))
     sys.stdout.flush()
-    df = pd.DataFrame(json['data'], columns=json['column_names'])
+    df = pd.DataFrame(my_json['data'], columns=my_json['column_names'])
     #convert to datetime, no timezone given
     df['Date'] = pd.to_datetime(df['Date'])
     return df
