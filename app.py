@@ -47,7 +47,8 @@ def get_ticker_data(ticker):
 
     '''
     #from TDI blog post, v1 API used, don't know about v3 advertised on quandl
-    url = 'https://www.quandl.com/api/v3/datasets/WIKI/%s' % ticker
+    url = 'https://www.quandl.com/api/v3/datasets/WIKI/{}?{}'.format(ticker,
+                'oszNL4VNfxT-nA-9NkAb')
     #this object handles retrieving data from apis
     session = requests.Session()
 
