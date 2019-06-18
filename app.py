@@ -19,8 +19,8 @@ def query():
         return render_template('index.html')
     elif request.method == 'POST':
         ticker = request.form['ticker']
-        raw_json = get_ticker_data(ticker, alpha_vantage = False)
-        df = json_to_pandas_df(raw_json, alpha_vantage = False)
+        raw_json = get_ticker_data(ticker)
+        df = json_to_pandas_df(raw_json)
         script, div = get_plot_script(df, ticker)
         return render_template('graph.html', script=script, div=div)
         return render_template('plot_display.html',
@@ -29,7 +29,7 @@ def query():
     else:
         return str('UNKNOWN ROUTE')
 
-def get_ticker_data(ticker, alpha_vantage = False):
+def get_ticker_data(ticker):
     '''
     internal function to handle lookup of ticker data
     Quandl API usage:
@@ -39,19 +39,12 @@ def get_ticker_data(ticker, alpha_vantage = False):
     '''
     #from TDI blog post, v1 API used, don't know about v3 advertised on quandl
     url = 'https://www.quandl.com/api/v3/datasets/WIKI/%s' % ticker
-    if alpha_vantage:
-        api_key = '5A7C8FNB8WEYQQHU'
-        outputsize = 'full'
-
-        #using alpha vantage api b/c tdi people swamped quandl
-        api_url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&outputsize={}&apikey={}'.format(ticker,
-                outputsize, api_key)
     #this object handles retrieving data from apis. I thin there should be a way
     #do this directly in pandas though
     session = requests.Session()
     #from TDI blog, this adapter says retry if you didn't make it to the
     #route through https. it's just http in the TDI blog, unsure how defaults
-    # work in this regard
+    #work in this regard
     session.mount('https://', requests.adapters.HTTPAdapter(max_retries=2))
     #retrieve response object from api, use .json() to convert to json-like
     #dictionary
@@ -64,20 +57,17 @@ def get_ticker_data(ticker, alpha_vantage = False):
     return response.json()['dataset']
 
 
-def json_to_pandas_df(my_json, alpha_vantage = False):
+def json_to_pandas_df(my_json):
     '''
     accepts json-like dict from quantl's api, and converts to a pandas
     dataframe with the appropriate column names adn types
     '''
-    if alpha_vantage:
-        pass
-    else:
-        #quandl json specific, there must be a better way to do this
-        sys.stdout.write(str(my_json.keys()))
-        sys.stdout.flush()
-        df = pd.DataFrame(my_json['data'], columns=my_json['column_names'])
-        #convert to datetime, no timezone given
-        df['Date'] = pd.to_datetime(df['Date'])
+    #quandl json specific, there must be a better way to do this
+    sys.stdout.write(str(my_json.keys()))
+    sys.stdout.flush()
+    df = pd.DataFrame(my_json['data'], columns=my_json['column_names'])
+    #convert to datetime, no timezone given
+    df['Date'] = pd.to_datetime(df['Date'])
     return df
 
 def get_plot_script(df, ticker, plot_indeces=['Open']):
