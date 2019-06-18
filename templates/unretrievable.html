@@ -7,24 +7,15 @@
     <meta name="author" content="@gotokunal">
     <!-- <link rel="icon" href="favicon.ico"> -->
 
-    <title>{{ticker}} stock history</title>
+    <title>Unable to retrieve {{ticker}} information</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="http://cdn.pydata.org/bokeh/release/bokeh-1.2.0.min.css" type="text/css" />
-    <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-1.2.0.min.js"></script>
-    {{ script | safe }}
   </head>
   <body>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12 text-left">
-            <h1>{{ticker}} historical stock metrics</h1>
-            <p>{{ div | safe }} </p>
-            <p><a href="/">Home</a></p>
-        </div>
-      </div>
-    </div>
+      <p>Sorry, we were unable to retrieve data for {{ticker}}.</p>
+      <p>We recieved the following error message from our Quandl query {{error}}</p>
+      <p><a href='/'>Home</a></p>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
