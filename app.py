@@ -22,9 +22,9 @@ def query():
         #ticker = request.form['ticker']
         #print(request.form.getlist('features'))#, allow_multiple=True))
         success, retrieved = get_ticker_data(request.form['ticker'])
-        name = retrieved['name'].split(' (')[0]
         if success:
             df = json_to_pandas_df(retrieved)
+            name = retrieved['name'].split(' (')[0]
             #print(request.form)
             #print(request.form.getlist('features'))
             script, div = get_plot_script(df,
