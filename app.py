@@ -104,11 +104,8 @@ def get_plot_script(df, ticker, name, plot_indeces=['Open', 'Close']):
     def find_ylims(df, plot_indeces, from_date, to_date):
         buff = 1.2
         ymin = 0
-        ymax = ymin
-        #TODO select subframe correctly
-        for index in plot_indeces:
-            ymax = max(df[np.logical_and(df['Date'] > from_date,
-                        df['Date'] < to_date)][index].max(), ymax)
+        ymax = df[np.logical_and(df['Date'] > from_date,
+                        df['Date'] < to_date)][plot_indeces].max().max()
         return (buff*ymin, buff*ymax)
     
     def find_xlims(from_date, to_date):
