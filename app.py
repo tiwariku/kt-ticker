@@ -21,13 +21,16 @@ def query():
         #ticker = request.form['ticker']
         #print(request.form.getlist('features'))#, allow_multiple=True))
         success, retrieved = get_ticker_data(request.form['ticker'])
+        name = retrieved['name'].split(' ({})'.format(request.form['ticker']))[0]
         if success:
             df = json_to_pandas_df(retrieved)
             script, div = get_plot_script(df,
-                    request.form['ticker'],
+                    ticker=request.form['ticker'],
+                    name=name,
                     plot_indeces=request.form.getlist('features'))
             return render_template('plot_display.html',
                         ticker=request.form['ticker'],
+                        name=name,
                         script=script,
                         div=div)
         else:
@@ -93,7 +96,7 @@ def json_to_pandas_df(my_json):
     df['Date'] = pd.to_datetime(df['Date'])
     return df
 
-def get_plot_script(df, ticker, plot_indeces=['Open', 'Close']):
+def get_plot_script(df, ticker, name, plot_indeces=['Open', 'Close']):
     '''
     accepts pandas dataframe with index Date and, by default, column 'Open'
     '''
@@ -105,13 +108,23 @@ def get_plot_script(df, ticker, plot_indeces=['Open', 'Close']):
         for index in plot_indeces:
             ymax = max(df[index].max(), ymax)
         return (buff*ymin, buff*ymax)
+    
+    def find_xlims():
+        '''
+        specify the month, hardcoded, could upgrade
+        '''
+        xmin = pd.to_datetime('2019-01-01')
+        xmax = pd.to_datetime('2019-02-01')
+        return (xmin, xmax)
 
-
-    fig = figure(title='%s share behaviour' % ticker,
+    fig = figure(title='%s share behaviour' % name,
                 x_axis_label='Time',
                 y_axis_label='Value',
                 x_axis_type='datetime',
-                y_range=(find_ylims(df, plot_indeces)))
+                y_range=(find_ylims(df, plot_indeces)),
+                x_range=find_xlims())
+            
+
     #TODO select subframe correctly using plot_indeces...
     colors = cividis(len(plot_indeces))
     for i in range(len(plot_indeces)):
