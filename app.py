@@ -26,7 +26,7 @@ def query():
         if success:
             df = json_to_pandas_df(retrieved)
             script, div = get_plot_script(df,
-                    ticker=request.form['ticker'],
+                    ticker=request.form['ticker'].upper(),
                     name=name,
                     plot_indeces=request.form.getlist('features'))
             return render_template('plot_display.html',
@@ -37,7 +37,7 @@ def query():
         else:
             #how can I redirect to a page but pass variables?
             return render_template('unretrievable.html',
-                    ticker=request.form['ticker'],
+                    ticker=request.form['ticker'].upper(),
                     error=str(retrieved)) 
     else:
         return str('UNKNOWN METHOD FOR ROUTE')
