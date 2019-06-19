@@ -25,10 +25,13 @@ def query():
         name = retrieved['name'].split(' (')[0]
         if success:
             df = json_to_pandas_df(retrieved)
+            #print(request.form)
+            #print(request.form.getlist('features'))
             script, div = get_plot_script(df,
                     ticker=request.form['ticker'].upper(),
                     name=name,
-                    plot_indeces=request.form.getlist('features'))
+                    plot_indeces=request.form.getlist('features')
+                    )
             return render_template('plot_display.html',
                         ticker=request.form['ticker'].upper(),
                         name=name,
@@ -102,11 +105,13 @@ def get_plot_script(df, ticker, name, plot_indeces=['Open', 'Close']):
     accepts pandas dataframe with index Date and, by default, column 'Open'
     '''
     def find_ylims(df, plot_indeces, from_date, to_date):
-        buff = 1.2
-        ymin = 0
+        buff = 2
+        #ymin = 0.01 #penny is the smallest?
         ymax = df[np.logical_and(df['Date'] > from_date,
                         df['Date'] < to_date)][plot_indeces].max().max()
-        return (buff*ymin, buff*ymax)
+        ymin = df[np.logical_and(df['Date'] > from_date,
+                        df['Date'] < to_date)][plot_indeces].min().min()
+        return (ymin/buff, buff*ymax)
     
     def find_xlims(from_date, to_date):
         '''
@@ -116,15 +121,17 @@ def get_plot_script(df, ticker, name, plot_indeces=['Open', 'Close']):
         xmax = pd.to_datetime(to_date)
         return (xmin, xmax)
 
-    (from_date, to_date) = (pd.to_datetime('2018-01-01'), 
+    (from_date, to_date) = (pd.to_datetime('2018-01-01'),
                                 pd.to_datetime('2018-02-01'))
 
     fig = figure(title='%s share behaviour' % name,
                 x_axis_label='Time',
                 y_axis_label='Value',
                 x_axis_type='datetime',
+                y_axis_type='log',
                 y_range=(find_ylims(df, plot_indeces, from_date, to_date)),
-                x_range=find_xlims(from_date, to_date))
+                x_range=find_xlims(from_date, to_date)
+                )
             
 
     #TODO select subframe correctly using plot_indeces...
