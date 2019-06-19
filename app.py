@@ -4,6 +4,7 @@ import requests
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.palettes import cividis
+import numpy as np
 import pandas as pd
 
 app = Flask(__name__)
@@ -21,7 +22,7 @@ def query():
         #ticker = request.form['ticker']
         #print(request.form.getlist('features'))#, allow_multiple=True))
         success, retrieved = get_ticker_data(request.form['ticker'])
-        name = retrieved['name'].split(' ({})'.format(request.form['ticker']))[0]
+        name = retrieved['name'].split(' (')[0]
         if success:
             df = json_to_pandas_df(retrieved)
             script, div = get_plot_script(df,
@@ -100,29 +101,33 @@ def get_plot_script(df, ticker, name, plot_indeces=['Open', 'Close']):
     '''
     accepts pandas dataframe with index Date and, by default, column 'Open'
     '''
-    def find_ylims(df, plot_indeces):
+    def find_ylims(df, plot_indeces, from_date, to_date):
         buff = 1.2
         ymin = 0
         ymax = ymin
         #TODO select subframe correctly
         for index in plot_indeces:
-            ymax = max(df[index].max(), ymax)
+            ymax = max(df[np.logical_and(df['Date'] > from_date,
+                        df['Date'] < to_date)][index].max(), ymax)
         return (buff*ymin, buff*ymax)
     
-    def find_xlims():
+    def find_xlims(from_date, to_date):
         '''
         specify the month, hardcoded, could upgrade
         '''
-        xmin = pd.to_datetime('2019-01-01')
-        xmax = pd.to_datetime('2019-02-01')
+        xmin = pd.to_datetime(from_date)
+        xmax = pd.to_datetime(to_date)
         return (xmin, xmax)
+
+    (from_date, to_date) = (pd.to_datetime('2018-01-01'), 
+                                pd.to_datetime('2018-02-01'))
 
     fig = figure(title='%s share behaviour' % name,
                 x_axis_label='Time',
                 y_axis_label='Value',
                 x_axis_type='datetime',
-                y_range=(find_ylims(df, plot_indeces)),
-                x_range=find_xlims())
+                y_range=(find_ylims(df, plot_indeces, from_date, to_date)),
+                x_range=find_xlims(from_date, to_date))
             
 
     #TODO select subframe correctly using plot_indeces...
