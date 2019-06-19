@@ -30,7 +30,7 @@ def query():
                     name=name,
                     plot_indeces=request.form.getlist('features'))
             return render_template('plot_display.html',
-                        ticker=request.form['ticker'],
+                        ticker=request.form['ticker'].upper(),
                         name=name,
                         script=script,
                         div=div)
