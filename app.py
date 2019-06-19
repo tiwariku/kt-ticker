@@ -124,7 +124,7 @@ def get_plot_script(df, ticker, name, plot_indeces=['Open', 'Close']):
     (from_date, to_date) = (pd.to_datetime('2018-01-01'),
                                 pd.to_datetime('2018-02-01'))
 
-    fig = figure(title='%s share behaviour' % name,
+    fig = figure(title='{} share behaviour, {}'.format( name, from_date.date()),
                 x_axis_label='Time',
                 y_axis_label='Value',
                 x_axis_type='datetime',
