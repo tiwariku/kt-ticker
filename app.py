@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect
 import requests
 from bokeh.plotting import figure
 from bokeh.embed import components
+from bokeh.palettes import cividis
 import pandas as pd
 
 app = Flask(__name__)
@@ -105,14 +106,17 @@ def get_plot_script(df, ticker, plot_indeces=['Open', 'Close']):
             ymax = max(df[index].max(), ymax)
         return (buff*ymin, buff*ymax)
 
+
     fig = figure(title='%s share behaviour' % ticker,
                 x_axis_label='Time',
                 y_axis_label='Value',
                 x_axis_type='datetime',
                 y_range=(find_ylims(df, plot_indeces)))
-    #TODO select subframe correctly...
-    for index in plot_indeces:
-        fig.line(df['Date'], df[index], legend=index)
+    #TODO select subframe correctly using plot_indeces...
+    colors = cividis(len(plot_indeces))
+    for i in range(len(plot_indeces)):
+        index = plot_indeces[i]
+        fig.line(df['Date'], df[index], color = colors[i], legend=index)
     script, div = components(fig)
     return script, div
 
